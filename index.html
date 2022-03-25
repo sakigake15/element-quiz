@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元素丸覚え!!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+</head>
+
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fa-solid fa-user-graduate d-inline-block align-text-top"></i>
+                元素丸覚え!!
+            </a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="col align-self-center">
+            <form name="mainForm" id="mondai_form">
+                <div class="mt-4 mb-2">
+                    <h3 class="h5" id="mondai_">
+                        <i class="fa-solid fa-q"></i> 問題
+                    </h3>
+                </div>
+                <div id="mondai"></div>
+                <h3 class="h5 mt-4 mb-3" id="erandene_">
+                    <i class="fa-regular fa-square-check"></i> 選んでね
+                </h3>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" onclick="hantei()" name="_radio" id="exampleRadios1"
+                        value="0">
+                    <label class="form-check-label" for="exampleRadios1">
+                        <span id="sentakuA"></span>
+                    </label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input " type="radio" onclick="hantei()" name="_radio" id="exampleRadios2"
+                        value="1">
+                    <label class="form-check-label" for="exampleRadios2">
+                        <span id="sentakuB"></span>
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input " type="radio" onclick="hantei()" name="_radio" id="exampleRadios3"
+                        value="2">
+                    <label class="form-check-label" for="exampleRadios3">
+                        <span id="sentakuC"></span>
+                    </label>
+                </div>
+
+                <input type="hidden" id="kotae">
+                <input type="hidden" id="_number">
+
+                <div id="progress">
+                    <hr>
+                    <div id="message"></div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 100%" id="bar"></div>
+                    </div>
+                    <hr>
+                </div>
+
+                <input type="button" id="start_button" value="スタート" onclick="click_start()" class="btn btn-primary">
+            </form>
+            <div id="tokutenhyouji" class="mt-4"></div>
+            <div id="gotou" class="mt-4"></div>
+            <input type="button" id="retry" value="復習する" onclick="start()" class="btn btn-primary">
+            <input type="button" id="mouichido_button" value="もう一度" onclick="start()" class="btn btn-primary">
+        </div>
+    </div>
+    <script src="element_quiz1.js"></script>
+    <script src="element_quiz2.js"></script>
+    <script src="element_quiz3.js"></script>
+    <script>
+        var mondai = {};
+        var mondaibangou;
+        var tokuten;
+        var nanmonme;
+        var timer;
+        var seikai_ = new Audio();
+        seikai_.src = "./seikai.mp3";
+        var fuseikai_ = new Audio();
+        fuseikai_.src = "./fuseikai.mp3";
+        var shuryo_ = new Audio();
+        shuryo_.src = "./end.mp3";
+        var time;
+        var seitouhyouji_text = "";
+        var gotou_count = "";
+        var gakunen;
+        var mondairisuto;
+        //秒数を変更
+        var second = 30;
+
+        // 復習モード
+        var checkmode = 0;
+
+        //一次元配列の作成・間違えた問題番号を入れる
+        var fukushu = new Array();
+
+        // var a = 0;
+
+        // ページ読み込み時に実行したい処理
+        window.onload = function () {
+            gakunensentaku();
+        }
+
+        //関数の初期化
+        function start() {
+            console.log("mondailist"+mondairisuto)
+            time = second;
+            tokuten = 0;
+            seitouhyouji_text = 0;
+            gotou_count = 0;
+            nanmonme = 0;
+            shutsudai();
+            //次の問題　のボタンを消す
+            document.getElementById("retry").style.display = "none";
+            document.getElementById("mondai_form").style.display = "unset";
+            document.getElementById("gotou").innerHTML = "";
+            document.getElementById("tokutenhyouji").innerHTML = "";
+            document.getElementById("start_button").style.display = "unset";
+            document.getElementById("bar").style.width = "100%";
+            document.getElementById("progress").style.display = "unset";
+            document.getElementById("mondai_").style.display = "unset"
+            document.getElementById("erandene_").innerHTML = "選んでね"
+            document.getElementById("mouichido_button").style.display = "none"
+        }
+
+        function gakunensentaku() {
+            document.getElementById("sentakuA").innerHTML = "レベル1";
+            document.getElementById("sentakuB").innerHTML = "レベル2";
+            document.getElementById("sentakuC").innerHTML = "レベル3";
+            document.getElementById("kotae").value = "gakunensentaku";
+            document.getElementById("_number").value = "gakunensentaku";
+            document.getElementById("progress").style.display = "none";
+            document.getElementById("mouichido_button").style.display = "none"
+            document.getElementById("start_button").style.display = "none";
+            document.getElementById("erandene_").innerHTML = "レベルを選んでね"
+            document.getElementById("mondai_").style.display = "none"
+            document.getElementById("retry").style.display = "none";
+
+        }
+
+        function click_start() {
+
+            document.getElementById("start_button").style.display = "none";
+            timer = setInterval(teiki, 100)
+        }
+
+        function teiki() {
+            time = time - 0.33;
+            document.getElementById("bar").style.width = time + "%";
+            if (fukushu.length == 0 && checkmode == 1) {
+                time = 0;
+            }
+            if (time <= 0) {
+                //タイマーを止める
+                clearInterval(timer);
+                shuryo_.play();
+
+                //フォームを隠す
+                document.getElementById("mondai_form").style.display = "none";
+
+
+
+                var gotou_text = "";
+                var tokutenhyouji_text = "";
+                for (var number of fukushu) {
+                    gotou_text = gotou_text + mondairisuto[number][0] + "<br>";
+                }
+                tokutenhyouji_text = tokuten;
+
+                document.getElementById("tokutenhyouji").innerHTML = '<h3 class="h5"> 得点</h3> <div class="alert alert-primary"> ' + "得点:" + tokutenhyouji_text + "　正答:" + seitouhyouji_text + "　誤答:" + gotou_count + '</div>';
+                //誤答があった時モードを変える
+                if (gotou_count > 0) {
+                    checkmode = 1;
+                    document.getElementById("retry").style.display = "unset";
+                    document.getElementById("gotou").innerHTML = '<h3 class="h5">チェック</h3> <div class="alert alert-danger"> ' + gotou_text + '</div>';
+                } else {
+                    checkmode = 0;
+                    document.getElementById("mouichido_button").style.display = "unset"
+                    document.getElementById("start_button").style.display = "none"
+                }
+            }
+        }
+
+        function hantei() {
+            var form = document.forms.mainForm;
+            var input_radio = form._radio.value;
+            var message;
+            var kotae = document.getElementById("kotae").value;
+            var number = document.getElementById("_number").value;
+            var iro;
+
+            if (kotae == "gakunensentaku") {
+                if (input_radio == "0") {
+                    gakunen = 1;
+                } else if (input_radio == "1") {
+                    gakunen = 2;
+                } else if (input_radio == "2") {
+                    gakunen = 3;
+                }
+                mondairisuto = eval("mondairisuto" + gakunen);
+                start();
+            } else {
+
+                if (time == second) {
+                    alert("スタートを押してください")
+                    return 0
+                }
+
+                //復習モードの時にチェック問題を消す
+                if (checkmode == 1) {
+                    let i = fukushu.indexOf(number);
+                    fukushu.splice(i, 1);
+                }
+
+
+                if (input_radio == kotae) {
+                    message = "正解"
+                    tokuten += 3;
+                    seitouhyouji_text++;
+                    seikai_.play();
+                    iro = "info";
+
+                }
+                // else if(input_radio == ") {
+                // message = input_text1 - input_text2;
+                //}
+                // else if (input_radio == "C") {
+                //     message = input_text1 * input_text2;
+                // }
+                else {
+                    message = "不正解";
+                    tokuten--;
+                    gotou_count++;
+
+                    //push-配列に追加（問題の番号）
+                    fukushu.push(number);
+
+                    fuseikai_.play();
+                    iro = "danger";
+                }
+
+
+                setTimeout(function () {
+                    if (time > 0) {
+                        shutsudai();
+                    }
+                }, 1000);
+                document.getElementById("message").innerHTML = '<div class="alert alert-' + iro + '"> ' + "得点：" + tokuten + "　" + nanmonme + "問目　" + message + "</div>";
+            }
+        }
+
+        // 問題を出す
+        function shutsudai() {
+            //何問目かの変数を増やす
+            nanmonme++;
+
+            //メッセージを消す
+            message = '<div class="alert alert-light"> ' + "得点：" + tokuten + "　" + nanmonme + "問目　</div>";
+            document.getElementById("message").innerHTML = message;
+
+
+            //配列の長さは.lengthをつける
+            var mondaisuu = mondairisuto.length;
+
+            var sentaku = [];
+            var random = [];
+
+            //kotaeは0～2の乱数
+            var kotae = Math.floor(Math.random() * 3);
+            random[0] = Math.floor(Math.random() * mondaisuu);
+            random[1] = Math.floor(Math.random() * mondaisuu);
+            random[2] = Math.floor(Math.random() * mondaisuu);
+            //復習モードの時は動きを変える
+            if (checkmode == 0) {
+                random[0] = Math.floor(Math.random() * mondaisuu);
+            } else {
+                //iは復習の配列の何番目か、fukushu[1]は復習する問題番号
+                let i = Math.floor(Math.random() * (fukushu.length - 1));
+                //復習の時は答えが必ず
+                random[kotae] = fukushu[i];
+
+            }
+            sentaku[0] = mondairisuto[random[0]];
+            sentaku[1] = mondairisuto[random[1]];
+            sentaku[2] = mondairisuto[random[2]];
+
+            //kotaeで何番目が答えか設定→randomで600個の中から数を選ぶ→mondai.numbarにする
+            mondai.mondai = sentaku[kotae][0];
+            mondai.number = random[kotae];
+            mondai.kotae = kotae;
+            mondai.sentakuA = sentaku[0][1];
+            mondai.sentakuB = sentaku[1][1];
+            mondai.sentakuC = sentaku[2][1];
+            //shutsudai("1+1=","A",2,4,6);
+
+            //divの中身をここで設定している
+            document.getElementById("mondai").innerHTML = mondai.mondai;
+            document.getElementById("kotae").value = mondai.kotae;
+            document.getElementById("_number").value = mondai.number;
+            document.getElementById("sentakuA").innerHTML = mondai.sentakuA;
+            document.getElementById("sentakuB").innerHTML = mondai.sentakuB;
+            document.getElementById("sentakuC").innerHTML = mondai.sentakuC;
+        }
+
+        //復習後のもう一度ボタンの修正・コメントの追加・足りないところ
+    </script>
+
+</body>
+
+</html>
