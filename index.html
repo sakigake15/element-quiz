@@ -17,7 +17,7 @@
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <i class="fa-solid fa-user-graduate d-inline-block align-text-top"></i>
+                <i class="fas fa-flask d-inline-block align-text-top"></i>
                 元素丸覚え!!
             </a>
         </div>
@@ -25,7 +25,7 @@
     <div class="container">
         <div class="col align-self-center">
             <form name="mainForm" id="mondai_form">
-                <div class="mt-4 mb-2">
+                <div class="mt-3 mb-2">
                     <h3 class="h5" id="mondai_">
                         <i class="fa-solid fa-q"></i> 問題
                     </h3>
@@ -75,6 +75,7 @@
             <input type="button" id="retry" value="復習する" onclick="start()" class="btn btn-primary">
             <input type="button" id="mouichido_button" value="もう一度" onclick="start()" class="btn btn-primary">
         </div>
+        
     </div>
     <script src="element_quiz1.js"></script>
     <script src="element_quiz2.js"></script>
@@ -97,7 +98,7 @@
         var gakunen;
         var mondairisuto;
         //秒数を変更
-        var second = 30;
+        var second = 100;
 
         // 復習モード
         var checkmode = 0;
@@ -114,7 +115,6 @@
 
         //関数の初期化
         function start() {
-            console.log("mondailist"+mondairisuto)
             time = second;
             tokuten = 0;
             seitouhyouji_text = 0;
@@ -210,6 +210,7 @@
                 }
                 mondairisuto = eval("mondairisuto" + gakunen);
                 start();
+
             } else {
 
                 if (time == second) {
@@ -260,13 +261,21 @@
             }
         }
 
+        //チェックボタンをはずす
+        function offradio() {
+            var elementcount = document.forms.mainForm._radio.length;
+            for (i = 0; i < elementcount; i++) {
+                document.forms.mainForm._radio[i].checked = false;
+            }
+        }
+
         // 問題を出す
         function shutsudai() {
             //何問目かの変数を増やす
             nanmonme++;
 
             //メッセージを消す
-            message = '<div class="alert alert-light"> ' + "得点：" + tokuten + "　" + nanmonme + "問目　</div>";
+            message = '<div class="alert alert-light pt-0 pb-0"> ' + "得点：" + tokuten + "　" + nanmonme + "問目　</div>";
             document.getElementById("message").innerHTML = message;
 
 
@@ -311,9 +320,12 @@
             document.getElementById("sentakuA").innerHTML = mondai.sentakuA;
             document.getElementById("sentakuB").innerHTML = mondai.sentakuB;
             document.getElementById("sentakuC").innerHTML = mondai.sentakuC;
+
+            //ラジオボタンをリセット
+            offradio();
         }
 
-        //復習後のもう一度ボタンの修正・コメントの追加・足りないところ
+        //コメントの追加・アイコンを変える（フォントオーサム）・時間の設定・https://sakigake15.github.io/element-quiz/
     </script>
 
 </body>
