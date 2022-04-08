@@ -75,7 +75,7 @@
             <input type="button" id="retry" value="復習する" onclick="start()" class="btn btn-primary">
             <input type="button" id="mouichido_button" value="もう一度" onclick="start()" class="btn btn-primary">
         </div>
-        
+
     </div>
     <script src="element_quiz1.js"></script>
     <script src="element_quiz2.js"></script>
@@ -180,7 +180,7 @@
 
                 document.getElementById("tokutenhyouji").innerHTML = '<h3 class="h5"> 得点</h3> <div class="alert alert-primary"> ' + "得点:" + tokutenhyouji_text + "　正答:" + seitouhyouji_text + "　誤答:" + gotou_count + '</div>';
                 //誤答があった時モードを変える
-                if (gotou_count > 0) {
+                if (fukushu.length > 0) {
                     checkmode = 1;
                     document.getElementById("retry").style.display = "unset";
                     document.getElementById("gotou").innerHTML = '<h3 class="h5">チェック</h3> <div class="alert alert-danger"> ' + gotou_text + '</div>';
@@ -257,7 +257,7 @@
                         shutsudai();
                     }
                 }, 1000);
-                document.getElementById("message").innerHTML = '<div class="alert alert-' + iro + '"> ' + "得点：" + tokuten + "　" + nanmonme + "問目　" + message + "</div>";
+                document.getElementById("message").innerHTML = '<div class="alert alert-' + iro + ' pt-0 pb-0"> ' + "得点：" + tokuten + "　" + nanmonme + "問目　" + message + "</div>";
             }
         }
 
@@ -285,25 +285,50 @@
             var sentaku = [];
             var random = [];
 
+            //答えが被らないように調整する
+            while (true) {
+                random[0] = Math.floor(Math.random() * mondaisuu);
+                random[1] = Math.floor(Math.random() * mondaisuu);
+                random[2] = Math.floor(Math.random() * mondaisuu);
+                
+                if (random[0] != random[1] && random[0] != random[2] && random[1] != random[2]) {
+                    break;
+                } else {
+                    console.log("再試行")
+                }
+                
+            }
+            
             //kotaeは0～2の乱数
-            var kotae = Math.floor(Math.random() * 3);
-            random[0] = Math.floor(Math.random() * mondaisuu);
-            random[1] = Math.floor(Math.random() * mondaisuu);
-            random[2] = Math.floor(Math.random() * mondaisuu);
+            var kotae = Math.floor(Math.random() * 3);//a~c
+
             //復習モードの時は動きを変える
             if (checkmode == 0) {
-                random[0] = Math.floor(Math.random() * mondaisuu);
             } else {
-                //iは復習の配列の何番目か、fukushu[1]は復習する問題番号
-                let i = Math.floor(Math.random() * (fukushu.length - 1));
-                //復習の時は答えが必ず
-                random[kotae] = fukushu[i];
+                while (true) {
+                    //iは復習の配列の何番目か、fukushu[1]は復習する問題番号
+                    let i = Math.floor(Math.random() * (fukushu.length - 1));
+                    random[0] = Math.floor(Math.random() * mondaisuu);//a
+                    random[1] = Math.floor(Math.random() * mondaisuu);//b
+                    random[2] = Math.floor(Math.random() * mondaisuu);//c
+                    random[kotae] = fukushu[i];
 
+                    if (random[0] != random[1] && random[0] != random[2] && random[1] != random[2]) {
+                        break;
+                    } else {
+                        console.log("再試行2")
+                        // console.log(fukushu[i])
+                        // console.log(random[0] + "," + random[1] + "," + random[2]);
+                        // console.log("kotae" + kotae);
+                    }
+
+                }
+                //復習の時は答えが必ず
             }
             sentaku[0] = mondairisuto[random[0]];
             sentaku[1] = mondairisuto[random[1]];
             sentaku[2] = mondairisuto[random[2]];
-
+            
             //kotaeで何番目が答えか設定→randomで600個の中から数を選ぶ→mondai.numbarにする
             mondai.mondai = sentaku[kotae][0];
             mondai.number = random[kotae];
@@ -325,7 +350,8 @@
             offradio();
         }
 
-        //コメントの追加・アイコンを変える（フォントオーサム）・時間の設定・https://sakigake15.github.io/element-quiz/
+        //https://sakigake15.github.io/element-quiz/
+        //宿題：問題のダブりの修正
     </script>
 
 </body>
